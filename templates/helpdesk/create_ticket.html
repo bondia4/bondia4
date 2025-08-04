@@ -1,0 +1,204 @@
+{% extends 'helpdesk/base.html' %}
+
+{% block title %}Create New Ticket - BRTS Helpdesk{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="card-title mb-0">
+                    <i class="bi bi-plus-circle"></i> Create New Support Ticket
+                </h4>
+            </div>
+            <div class="card-body">
+                <form method="post">
+                    {% csrf_token %}
+                    
+                    <div class="mb-3">
+                        <label for="{{ form.subject.id_for_label }}" class="form-label">
+                            Subject <span class="text-danger">*</span>
+                        </label>
+                        {{ form.subject }}
+                        {% if form.subject.errors %}
+                            <div class="text-danger small">
+                                {% for error in form.subject.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                        <div class="form-text">
+                            Provide a brief, descriptive title for your issue.
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="{{ form.description.id_for_label }}" class="form-label">
+                            Description <span class="text-danger">*</span>
+                        </label>
+                        {{ form.description }}
+                        {% if form.description.errors %}
+                            <div class="text-danger small">
+                                {% for error in form.description.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                        <div class="form-text">
+                            Please provide detailed information about your issue, including:
+                            <ul class="small mt-1">
+                                <li>What you were trying to do</li>
+                                <li>What actually happened</li>
+                                <li>Any error messages you received</li>
+                                <li>Steps to reproduce the issue</li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="{{ form.category.id_for_label }}" class="form-label">
+                                    Category
+                                </label>
+                                {{ form.category }}
+                                {% if form.category.errors %}
+                                    <div class="text-danger small">
+                                        {% for error in form.category.errors %}
+                                            {{ error }}
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                                <div class="form-text">
+                                    Select the category that best describes your issue.
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="{{ form.severity.id_for_label }}" class="form-label">
+                                    Severity
+                                </label>
+                                {{ form.severity }}
+                                {% if form.severity.errors %}
+                                    <div class="text-danger small">
+                                        {% for error in form.severity.errors %}
+                                            {{ error }}
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                                <div class="form-text">
+                                    How severe is this issue affecting your work?
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Severity Guide -->
+                    <div class="alert alert-info">
+                        <h6 class="alert-heading">Severity Guidelines:</h6>
+                        <ul class="mb-0 small">
+                            <li><strong>Critical:</strong> System down, major security breach, data loss</li>
+                            <li><strong>High:</strong> Major functionality broken, significant business impact</li>
+                            <li><strong>Medium:</strong> Some functionality affected, moderate business impact</li>
+                            <li><strong>Low:</strong> Minor issues, cosmetic problems, feature requests</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="d-flex justify-content-between">
+                        <a href="{% url 'helpdesk:client_dashboard' %}" class="btn btn-secondary">
+                            <i class="bi bi-arrow-left"></i> Cancel
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-check-circle"></i> Create Ticket
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <!-- Tips Card -->
+        <div class="card mt-4">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="bi bi-lightbulb"></i> Tips for Better Support
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6>Be Specific</h6>
+                        <p class="small text-muted">
+                            Include specific error messages, exact steps to reproduce, and what you expected to happen.
+                        </p>
+                    </div>
+                    <div class="col-md-6">
+                        <h6>Include Context</h6>
+                        <p class="small text-muted">
+                            Mention your operating system, browser, software versions, and when the issue started.
+                        </p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6>Attach Files</h6>
+                        <p class="small text-muted">
+                            Screenshots, log files, or documents can help our team understand your issue faster.
+                        </p>
+                    </div>
+                    <div class="col-md-6">
+                        <h6>Use Keywords</h6>
+                        <p class="small text-muted">
+                            Words like "urgent", "critical", or "outage" help us prioritize your ticket appropriately.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Auto-resize textarea
+    const textarea = document.querySelector('textarea[name="description"]');
+    if (textarea) {
+        textarea.addEventListener('input', function() {
+            this.style.height = 'auto';
+            this.style.height = this.scrollHeight + 'px';
+        });
+    }
+    
+    // Character count for subject
+    const subjectInput = document.querySelector('input[name="subject"]');
+    if (subjectInput) {
+        const maxLength = 200;
+        const parentDiv = subjectInput.parentNode;
+        const counterDiv = document.createElement('div');
+        counterDiv.className = 'form-text';
+        counterDiv.innerHTML = `<span id="subject-counter">0</span>/${maxLength} characters`;
+        parentDiv.appendChild(counterDiv);
+        
+        const counter = document.getElementById('subject-counter');
+        
+        subjectInput.addEventListener('input', function() {
+            const length = this.value.length;
+            counter.textContent = length;
+            
+            if (length > maxLength * 0.8) {
+                counter.className = 'text-warning';
+            } else {
+                counter.className = '';
+            }
+            
+            if (length > maxLength) {
+                counter.className = 'text-danger';
+            }
+        });
+    }
+});
+</script>
+{% endblock %}

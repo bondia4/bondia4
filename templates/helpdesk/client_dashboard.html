@@ -1,0 +1,264 @@
+{% extends 'helpdesk/base.html' %}
+
+{% block title %}Client Dashboard - BRTS Helpdesk{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1 class="h3">My Tickets Dashboard</h1>
+            <a href="{% url 'helpdesk:create_ticket' %}" class="btn btn-primary">
+                <i class="bi bi-plus-circle"></i> Create New Ticket
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Quick Stats -->
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="card text-white bg-primary">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h4 class="card-title">{{ total_tickets }}</h4>
+                        <p class="card-text">Total Tickets</p>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="bi bi-ticket-perforated fs-1"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-white bg-warning">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h4 class="card-title">{{ status_counts.open|default:0 }}</h4>
+                        <p class="card-text">Open Tickets</p>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="bi bi-exclamation-circle fs-1"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-white bg-info">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h4 class="card-title">{{ status_counts.in_progress|default:0 }}</h4>
+                        <p class="card-text">In Progress</p>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="bi bi-clock fs-1"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-white bg-success">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h4 class="card-title">{{ status_counts.resolved|default:0 }}</h4>
+                        <p class="card-text">Resolved</p>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="bi bi-check-circle fs-1"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <!-- My Tickets -->
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">My Tickets</h5>
+            </div>
+            <div class="card-body">
+                {% if tickets %}
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Ticket #</th>
+                                    <th>Subject</th>
+                                    <th>Status</th>
+                                    <th>Priority</th>
+                                    <th>Assigned To</th>
+                                    <th>Created</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for ticket in tickets %}
+                                <tr>
+                                    <td>
+                                        <a href="{% url 'helpdesk:ticket_detail' ticket.id %}" class="text-decoration-none">
+                                            {{ ticket.ticket_number }}
+                                        </a>
+                                    </td>
+                                    <td>{{ ticket.subject|truncatechars:40 }}</td>
+                                    <td>
+                                        {% if ticket.status == 'open' %}
+                                            <span class="badge bg-danger">{{ ticket.get_status_display }}</span>
+                                        {% elif ticket.status == 'in_progress' %}
+                                            <span class="badge bg-warning">{{ ticket.get_status_display }}</span>
+                                        {% elif ticket.status == 'pending' %}
+                                            <span class="badge bg-info">{{ ticket.get_status_display }}</span>
+                                        {% elif ticket.status == 'resolved' %}
+                                            <span class="badge bg-success">{{ ticket.get_status_display }}</span>
+                                        {% else %}
+                                            <span class="badge bg-secondary">{{ ticket.get_status_display }}</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if ticket.priority == 'critical' %}
+                                            <span class="badge bg-danger">{{ ticket.get_priority_display }}</span>
+                                        {% elif ticket.priority == 'high' %}
+                                            <span class="badge bg-warning">{{ ticket.get_priority_display }}</span>
+                                        {% elif ticket.priority == 'medium' %}
+                                            <span class="badge bg-info">{{ ticket.get_priority_display }}</span>
+                                        {% else %}
+                                            <span class="badge bg-secondary">{{ ticket.get_priority_display }}</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if ticket.assigned_to %}
+                                            {{ ticket.assigned_to.get_full_name|default:ticket.assigned_to.username }}
+                                        {% else %}
+                                            <span class="text-muted">Unassigned</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ ticket.created_at|date:"M j, Y" }}</td>
+                                    <td>
+                                        <a href="{% url 'helpdesk:ticket_detail' ticket.id %}" class="btn btn-sm btn-outline-primary">
+                                            View
+                                        </a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <!-- Pagination -->
+                    {% if tickets.has_other_pages %}
+                        <nav aria-label="Ticket pagination">
+                            <ul class="pagination justify-content-center">
+                                {% if tickets.has_previous %}
+                                    <li class="page-item">
+                                        <a class="page-link" href="?page={{ tickets.previous_page_number }}">Previous</a>
+                                    </li>
+                                {% endif %}
+                                
+                                {% for num in tickets.paginator.page_range %}
+                                    {% if tickets.number == num %}
+                                        <li class="page-item active">
+                                            <span class="page-link">{{ num }}</span>
+                                        </li>
+                                    {% else %}
+                                        <li class="page-item">
+                                            <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                                        </li>
+                                    {% endif %}
+                                {% endfor %}
+                                
+                                {% if tickets.has_next %}
+                                    <li class="page-item">
+                                        <a class="page-link" href="?page={{ tickets.next_page_number }}">Next</a>
+                                    </li>
+                                {% endif %}
+                            </ul>
+                        </nav>
+                    {% endif %}
+                {% else %}
+                    <div class="text-center py-4">
+                        <i class="bi bi-inbox display-1 text-muted"></i>
+                        <h4 class="text-muted">No tickets yet</h4>
+                        <p class="text-muted">Create your first support ticket to get started.</p>
+                        <a href="{% url 'helpdesk:create_ticket' %}" class="btn btn-primary">Create Ticket</a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <!-- Sidebar -->
+    <div class="col-lg-4">
+        <!-- Recent Activity -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Recent Activity</h5>
+            </div>
+            <div class="card-body">
+                {% if recent_history %}
+                    {% for history in recent_history %}
+                        <div class="d-flex align-items-start mb-3">
+                            <div class="flex-shrink-0">
+                                {% if history.action_type == 'created' %}
+                                    <i class="bi bi-plus-circle text-success"></i>
+                                {% elif history.action_type == 'status_changed' %}
+                                    <i class="bi bi-arrow-repeat text-info"></i>
+                                {% elif history.action_type == 'comment_added' %}
+                                    <i class="bi bi-chat text-primary"></i>
+                                {% elif history.action_type == 'assigned' %}
+                                    <i class="bi bi-person-check text-warning"></i>
+                                {% else %}
+                                    <i class="bi bi-clock text-muted"></i>
+                                {% endif %}
+                            </div>
+                            <div class="flex-grow-1 ms-2">
+                                <div class="small">
+                                    <strong>{{ history.ticket.ticket_number }}</strong>
+                                    {{ history.description }}
+                                </div>
+                                <div class="text-muted small">
+                                    {{ history.timestamp|timesince }} ago
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <p class="text-muted">No recent activity</p>
+                {% endif %}
+            </div>
+        </div>
+        
+        <!-- Notifications -->
+        {% if notifications %}
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Recent Notifications</h5>
+                </div>
+                <div class="card-body">
+                    {% for notification in notifications %}
+                        <div class="alert alert-{% if notification.notification_type == 'ticket_escalated' %}danger{% elif notification.notification_type == 'status_changed' %}success{% else %}info{% endif %} py-2">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <strong>{{ notification.title }}</strong><br>
+                                    <small>{{ notification.message }}</small>
+                                </div>
+                                <small class="text-muted">{{ notification.created_at|timesince }} ago</small>
+                            </div>
+                        </div>
+                    {% endfor %}
+                    <div class="text-center">
+                        <a href="{% url 'helpdesk:notifications' %}" class="btn btn-sm btn-outline-primary">View All</a>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
