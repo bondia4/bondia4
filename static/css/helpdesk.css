@@ -1,0 +1,337 @@
+/* Custom styles for BRTS Helpdesk System */
+
+/* General Styles */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f8f9fa;
+}
+
+.navbar-brand {
+    font-weight: bold;
+    font-size: 1.25rem;
+}
+
+/* Card Enhancements */
+.card {
+    border: none;
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    margin-bottom: 1.5rem;
+}
+
+.card-header {
+    background-color: #fff;
+    border-bottom: 1px solid #dee2e6;
+    font-weight: 600;
+}
+
+/* Status and Priority Badges */
+.badge {
+    font-size: 0.75rem;
+    font-weight: 500;
+}
+
+/* Ticket Priority Colors */
+.priority-critical {
+    color: #dc3545;
+    font-weight: bold;
+}
+
+.priority-high {
+    color: #fd7e14;
+    font-weight: bold;
+}
+
+.priority-medium {
+    color: #0dcaf0;
+}
+
+.priority-low {
+    color: #6c757d;
+}
+
+/* Status Colors */
+.status-open {
+    color: #dc3545;
+}
+
+.status-in-progress {
+    color: #fd7e14;
+}
+
+.status-pending {
+    color: #0dcaf0;
+}
+
+.status-resolved {
+    color: #198754;
+}
+
+.status-closed {
+    color: #6c757d;
+}
+
+/* Dashboard Stats Cards */
+.stats-card {
+    transition: transform 0.2s;
+}
+
+.stats-card:hover {
+    transform: translateY(-2px);
+}
+
+/* Notification Styles */
+.notification-item {
+    border-left: 4px solid #0d6efd;
+    background-color: #f8f9fa;
+    padding: 0.75rem;
+    margin-bottom: 0.5rem;
+    border-radius: 0.375rem;
+}
+
+.notification-item.unread {
+    background-color: #e7f1ff;
+    border-left-color: #0d6efd;
+}
+
+.notification-item.read {
+    background-color: #f8f9fa;
+    border-left-color: #6c757d;
+}
+
+/* Timeline Styles for History */
+.timeline {
+    position: relative;
+}
+
+.timeline::before {
+    content: '';
+    position: absolute;
+    left: 1rem;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: #dee2e6;
+}
+
+.timeline-item {
+    position: relative;
+    padding-left: 3rem;
+    margin-bottom: 1.5rem;
+}
+
+.timeline-icon {
+    position: absolute;
+    left: 0.5rem;
+    top: 0.5rem;
+    width: 2rem;
+    height: 2rem;
+    background: #fff;
+    border: 2px solid #0d6efd;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.875rem;
+}
+
+/* File Upload Area */
+.file-upload-area {
+    border: 2px dashed #dee2e6;
+    border-radius: 0.375rem;
+    padding: 2rem;
+    text-align: center;
+    transition: border-color 0.2s;
+}
+
+.file-upload-area:hover {
+    border-color: #0d6efd;
+}
+
+.file-upload-area.dragover {
+    border-color: #0d6efd;
+    background-color: #f8f9fa;
+}
+
+/* Comments Section */
+.comment {
+    border-left: 3px solid #dee2e6;
+    padding-left: 1rem;
+    margin-bottom: 1rem;
+}
+
+.comment.internal {
+    border-left-color: #fd7e14;
+    background-color: #fff3cd;
+}
+
+.comment-author {
+    font-weight: 600;
+    color: #495057;
+}
+
+.comment-time {
+    font-size: 0.875rem;
+    color: #6c757d;
+}
+
+/* Filter Sidebar */
+.filter-sidebar {
+    background-color: #fff;
+    border-radius: 0.375rem;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+/* Analytics Charts */
+.chart-container {
+    position: relative;
+    height: 300px;
+    margin-bottom: 2rem;
+}
+
+/* Responsive Table */
+.table-responsive {
+    border-radius: 0.375rem;
+}
+
+.table th {
+    border-top: none;
+    font-weight: 600;
+    color: #495057;
+    background-color: #f8f9fa;
+}
+
+/* Loading States */
+.loading {
+    opacity: 0.6;
+    pointer-events: none;
+}
+
+.spinner-border-sm {
+    width: 1rem;
+    height: 1rem;
+}
+
+/* Escalation Alert */
+.escalated-ticket {
+    border-left: 4px solid #dc3545;
+}
+
+.escalation-badge {
+    background-color: #dc3545;
+    color: white;
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.25rem;
+    font-size: 0.75rem;
+    font-weight: 500;
+}
+
+/* Attachment Styles */
+.attachment-item {
+    display: flex;
+    align-items: center;
+    padding: 0.75rem;
+    border: 1px solid #dee2e6;
+    border-radius: 0.375rem;
+    margin-bottom: 0.5rem;
+    background-color: #fff;
+}
+
+.attachment-icon {
+    width: 2rem;
+    height: 2rem;
+    margin-right: 0.75rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #f8f9fa;
+    border-radius: 0.25rem;
+}
+
+/* Form Enhancements */
+.form-control:focus {
+    border-color: #0d6efd;
+    box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+}
+
+.form-select:focus {
+    border-color: #0d6efd;
+    box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+}
+
+/* Success/Error States */
+.alert {
+    border: none;
+    border-radius: 0.5rem;
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+    .container-fluid {
+        padding-left: 1rem;
+        padding-right: 1rem;
+    }
+    
+    .card {
+        margin-bottom: 1rem;
+    }
+    
+    .table-responsive {
+        font-size: 0.875rem;
+    }
+    
+    .btn {
+        font-size: 0.875rem;
+        padding: 0.5rem 0.75rem;
+    }
+    
+    .navbar-brand {
+        font-size: 1.1rem;
+    }
+}
+
+/* Dark Mode Support */
+@media (prefers-color-scheme: dark) {
+    body {
+        background-color: #212529;
+        color: #fff;
+    }
+    
+    .card {
+        background-color: #343a40;
+        color: #fff;
+    }
+    
+    .card-header {
+        background-color: #495057;
+        border-bottom-color: #6c757d;
+    }
+    
+    .table {
+        color: #fff;
+    }
+    
+    .table th {
+        background-color: #495057;
+        color: #fff;
+    }
+}
+
+/* Print Styles */
+@media print {
+    .navbar,
+    .btn,
+    .pagination,
+    .card-header .dropdown {
+        display: none !important;
+    }
+    
+    .card {
+        border: 1px solid #dee2e6;
+        box-shadow: none;
+    }
+    
+    .container-fluid {
+        padding: 0;
+    }
+}

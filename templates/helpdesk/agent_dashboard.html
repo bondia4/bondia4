@@ -1,0 +1,286 @@
+{% extends 'helpdesk/base.html' %}
+
+{% block title %}Agent Dashboard - BRTS Helpdesk{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1 class="h3">Support Agent Dashboard</h1>
+            <div>
+                <a href="{% url 'helpdesk:ticket_list' %}" class="btn btn-outline-primary">
+                    <i class="bi bi-list-task"></i> All Tickets
+                </a>
+                {% if user.is_admin %}
+                    <a href="{% url 'helpdesk:analytics_dashboard' %}" class="btn btn-outline-success">
+                        <i class="bi bi-graph-up"></i> Analytics
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Quick Stats -->
+<div class="row mb-4">
+    <div class="col-md-2">
+        <div class="card text-white bg-primary stats-card">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h4 class="card-title">{{ stats.total_tickets }}</h4>
+                        <p class="card-text">Total Tickets</p>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="bi bi-ticket-perforated fs-1"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-2">
+        <div class="card text-white bg-danger stats-card">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h4 class="card-title">{{ stats.open_tickets }}</h4>
+                        <p class="card-text">Open</p>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="bi bi-exclamation-circle fs-1"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-2">
+        <div class="card text-white bg-warning stats-card">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h4 class="card-title">{{ stats.in_progress }}</h4>
+                        <p class="card-text">In Progress</p>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="bi bi-clock fs-1"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-2">
+        <div class="card text-white bg-success stats-card">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h4 class="card-title">{{ stats.resolved_today }}</h4>
+                        <p class="card-text">Resolved Today</p>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="bi bi-check-circle fs-1"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-2">
+        <div class="card text-white bg-info stats-card">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h4 class="card-title">{{ stats.assigned_to_me }}</h4>
+                        <p class="card-text">Assigned to Me</p>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="bi bi-person-check fs-1"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-2">
+        <div class="card text-white bg-dark stats-card">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h4 class="card-title">{{ stats.critical_tickets }}</h4>
+                        <p class="card-text">Critical</p>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="bi bi-exclamation-triangle fs-1"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <!-- My Assigned Tickets -->
+    <div class="col-lg-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">My Assigned Tickets</h5>
+            </div>
+            <div class="card-body">
+                {% if my_tickets %}
+                    <div class="table-responsive">
+                        <table class="table table-sm">
+                            <thead>
+                                <tr>
+                                    <th>Ticket #</th>
+                                    <th>Subject</th>
+                                    <th>Priority</th>
+                                    <th>Status</th>
+                                    <th>Client</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for ticket in my_tickets %}
+                                <tr {% if ticket.is_escalated %}class="escalated-ticket"{% endif %}>
+                                    <td>
+                                        <a href="{% url 'helpdesk:ticket_detail' ticket.id %}" class="text-decoration-none">
+                                            {{ ticket.ticket_number }}
+                                        </a>
+                                        {% if ticket.is_escalated %}
+                                            <span class="escalation-badge">ESCALATED</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ ticket.subject|truncatechars:30 }}</td>
+                                    <td>
+                                        {% if ticket.priority == 'critical' %}
+                                            <span class="badge bg-danger">{{ ticket.get_priority_display }}</span>
+                                        {% elif ticket.priority == 'high' %}
+                                            <span class="badge bg-warning">{{ ticket.get_priority_display }}</span>
+                                        {% elif ticket.priority == 'medium' %}
+                                            <span class="badge bg-info">{{ ticket.get_priority_display }}</span>
+                                        {% else %}
+                                            <span class="badge bg-secondary">{{ ticket.get_priority_display }}</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if ticket.status == 'open' %}
+                                            <span class="badge bg-danger">{{ ticket.get_status_display }}</span>
+                                        {% elif ticket.status == 'in_progress' %}
+                                            <span class="badge bg-warning">{{ ticket.get_status_display }}</span>
+                                        {% else %}
+                                            <span class="badge bg-info">{{ ticket.get_status_display }}</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ ticket.created_by.get_full_name|default:ticket.created_by.username }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="text-center">
+                        <a href="{% url 'helpdesk:ticket_list' %}?assigned=me" class="btn btn-sm btn-outline-primary">View All My Tickets</a>
+                    </div>
+                {% else %}
+                    <div class="text-center py-4">
+                        <i class="bi bi-inbox display-4 text-muted"></i>
+                        <h5 class="text-muted">No tickets assigned</h5>
+                        <p class="text-muted">No tickets are currently assigned to you.</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <!-- Recent Tickets -->
+    <div class="col-lg-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Recent Tickets</h5>
+            </div>
+            <div class="card-body">
+                {% if recent_tickets %}
+                    <div class="table-responsive">
+                        <table class="table table-sm">
+                            <thead>
+                                <tr>
+                                    <th>Ticket #</th>
+                                    <th>Subject</th>
+                                    <th>Priority</th>
+                                    <th>Created</th>
+                                    <th>Assigned</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for ticket in recent_tickets %}
+                                <tr>
+                                    <td>
+                                        <a href="{% url 'helpdesk:ticket_detail' ticket.id %}" class="text-decoration-none">
+                                            {{ ticket.ticket_number }}
+                                        </a>
+                                    </td>
+                                    <td>{{ ticket.subject|truncatechars:30 }}</td>
+                                    <td>
+                                        {% if ticket.priority == 'critical' %}
+                                            <span class="badge bg-danger">{{ ticket.get_priority_display }}</span>
+                                        {% elif ticket.priority == 'high' %}
+                                            <span class="badge bg-warning">{{ ticket.get_priority_display }}</span>
+                                        {% elif ticket.priority == 'medium' %}
+                                            <span class="badge bg-info">{{ ticket.get_priority_display }}</span>
+                                        {% else %}
+                                            <span class="badge bg-secondary">{{ ticket.get_priority_display }}</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ ticket.created_at|timesince }} ago</td>
+                                    <td>
+                                        {% if ticket.assigned_to %}
+                                            {{ ticket.assigned_to.first_name|default:ticket.assigned_to.username }}
+                                        {% else %}
+                                            <span class="text-muted">Unassigned</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="text-center">
+                        <a href="{% url 'helpdesk:ticket_list' %}" class="btn btn-sm btn-outline-primary">View All Tickets</a>
+                    </div>
+                {% else %}
+                    <div class="text-center py-4">
+                        <i class="bi bi-inbox display-4 text-muted"></i>
+                        <h5 class="text-muted">No recent tickets</h5>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Alerts for Critical Issues -->
+{% if stats.critical_tickets > 0 or stats.escalated_tickets > 0 %}
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="alert alert-danger">
+            <h5 class="alert-heading">
+                <i class="bi bi-exclamation-triangle"></i> Critical Issues Requiring Attention
+            </h5>
+            <div class="row">
+                {% if stats.critical_tickets > 0 %}
+                <div class="col-md-6">
+                    <p><strong>{{ stats.critical_tickets }}</strong> critical priority tickets need immediate attention.</p>
+                    <a href="{% url 'helpdesk:ticket_list' %}?priority=critical" class="btn btn-sm btn-outline-danger">
+                        View Critical Tickets
+                    </a>
+                </div>
+                {% endif %}
+                {% if stats.escalated_tickets > 0 %}
+                <div class="col-md-6">
+                    <p><strong>{{ stats.escalated_tickets }}</strong> escalated tickets require urgent review.</p>
+                    <a href="{% url 'helpdesk:ticket_list' %}?search=escalated" class="btn btn-sm btn-outline-danger">
+                        View Escalated Tickets
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}
